@@ -1,0 +1,37 @@
+{
+  "name": "PhoText Dev Environment",
+  // Use a pre-built image with Node.js
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+
+  // Features to add to the base image.
+  // This installs the Supabase and Vercel CLIs automatically.
+  "features": {
+    "ghcr.io/supabase/cli/supabase-cli:1": {},
+    "ghcr.io/vercel/cli/vercel-cli:1": {}
+  },
+
+  // Forward the Vite port so you can see your live app.
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite App",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  // Commands to run after the Codespace is created.
+  // This automatically installs all your frontend dependencies.
+  "postCreateCommand": "cd frontend && npm install",
+
+  // Recommended VS Code extensions for this project.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "supabase.supabase"
+      ]
+    }
+  }
+}
