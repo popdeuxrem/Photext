@@ -1,26 +1,36 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "@/shared/components/ui/toaster";
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import './globals.css'; // This path is now correct
+import { Toaster } from '@/shared/components/ui/toaster';
 
-const inter = Inter({ subsets: ["latin"] });
+const geistSans = localFont({
+  src: './fonts/Geist-Regular.woff2',
+  variable: '--font-geist-sans',
+  display: 'swap',
+});
+
+const geistMono = localFont({
+  src: './fonts/GeistMono-Regular.woff2',
+  variable: '--font-geist-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: "phoTextAI - Magic Image Editor",
-  description: "The AI-powered image text editor with vision and inpainting.",
+  title: 'phoTextAI - Magic Image Editor',
+  description: 'The AI-powered image text editor with vision and inpainting.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script src="https://cdn.jsdelivr.net/npm/puter/dist/browser.min.js"></script>
       </head>
-      <body className={inter.className}>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
         <Toaster />
       </body>
