@@ -47,3 +47,6 @@ next-env.d.ts
 
 # Turbo
 .turbo
+
+# Ignore platform-specific lock file
+package-lock.json
