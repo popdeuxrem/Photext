@@ -6,14 +6,15 @@ import { useAppStore } from '@/shared/store/useAppStore';
 import { fabric } from 'fabric';
 import { AiToolsModal } from './AiToolsModal';
 import { Upload, Type, Wand2, Bot } from 'lucide-react';
-import { toast } from '@/shared/components/ui/use-toast';
+import { useToast } from '@/shared/components/ui/use-toast';
 import imageCompression from 'browser-image-compression';
-import { TextProperties } from './TextProperties';
+import { TextProperties } from './TextProperties'; // Correctly imported
 
 export function Toolbar() {
     const { fabricCanvas, activeObject, saveState, addJob, updateJob, removeJob } = useAppStore();
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { toast } = useToast();
 
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -25,7 +26,6 @@ export function Toolbar() {
         try {
             const compressedFile = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920 });
             updateJob(jobId, 'processing', 'Uploading image...');
-            // TODO: Upload to Supabase Storage and get URL
             const imageUrl = URL.createObjectURL(compressedFile);
 
             fabricCanvas.clear();
@@ -93,13 +93,4 @@ export function Toolbar() {
     );
 }
 
-function TextProperties() {
-    // This sub-component could be created to clean up the Toolbar
-    // It would contain the logic for Bold, Italic, Font Size etc.
-    return (
-        <div className="border-t pt-4 space-y-4 flex-grow">
-            <h3 className="font-semibold mb-2 text-sm">Text Properties</h3>
-            {/* Add ToggleGroups and Inputs for text styling here */}
-        </div>
-    );
-}
+// The duplicate function that was here has been removed.
