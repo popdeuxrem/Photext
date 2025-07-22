@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { fabric } from 'fabric';
 
 // Define types for our state
+type JobStatus = 'processing' | 'completed' | 'failed';
+
 type Job = {
   id: number;
   text: string;
-  status: 'processing' | 'completed' | 'failed';
+  status: JobStatus;
 };
 
 type AppState = {
@@ -21,12 +23,13 @@ type AppActions = {
   setActiveObject: (object: fabric.Object | null) => void;
   saveState: (source?: string) => void;
   undo: () => void;
-  redo: () => boolean;
+  redo: () => void;
   canUndo: () => boolean;
   canRedo: () => boolean;
   addJob: (job: Job) => void;
-  updateJob: (jobId: number, status: Job['status'], text?: string) => void;
+  updateJob: (jobId: number, status: JobStatus, text?: string) => void;
   removeJob: (jobId: number) => void;
+  clearCompletedJobs: () => void;
 };
 
 export const useAppStore = create<AppState & AppActions>((set, get) => ({
@@ -56,7 +59,13 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
     if (get().canUndo()) {
       const newIndex = get().historyIndex - 1;
       const prevState = JSON.parse(get().history[newIndex]);
-      canvas?.loadFromJSON(prevState, () => canvas.renderAll());
+      canvas?.loadFromJSON(prevState, () => {
+        canvas.renderAll();
+        const bgImage = canvas.backgroundImage;
+        if (bgImage && typeof bgImage !== 'string' && bgImage.src) {
+            canvas.setBackgroundImage(bgImage.src, canvas.renderAll.bind(canvas));
+        }
+      });
       set({ historyIndex: newIndex });
     }
   },
@@ -66,11 +75,15 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
     if (get().canRedo()) {
       const newIndex = get().historyIndex + 1;
       const nextState = JSON.parse(get().history[newIndex]);
-      canvas?.loadFromJSON(nextState, () => canvas.renderAll());
+      canvas?.loadFromJSON(nextState, () => {
+        canvas.renderAll();
+        const bgImage = canvas.backgroundImage;
+        if (bgImage && typeof bgImage !== 'string' && bgImage.src) {
+            canvas.setBackgroundImage(bgImage.src, canvas.renderAll.bind(canvas));
+        }
+      });
       set({ historyIndex: newIndex });
-      return true;
     }
-    return false;
   },
 
   canUndo: () => get().historyIndex > 0,
@@ -83,4 +96,5 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
     }));
   },
   removeJob: (jobId) => set((state) => ({ jobs: state.jobs.filter((j) => j.id !== jobId) })),
+  clearCompletedJobs: () => set((state) => ({ jobs: state.jobs.filter((j) => j.status === 'processing') })),
 }));
