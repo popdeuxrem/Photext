@@ -1,23 +1,10 @@
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css'; // This path is now correct
+import './globals.css'; // This import should now work
 import { Toaster } from '@/shared/components/ui/toaster';
-
-const geistSans = localFont({
-  src: './fonts/Geist-Regular.woff2',
-  variable: '--font-geist-sans',
-  display: 'swap',
-});
-
-const geistMono = localFont({
-  src: './fonts/GeistMono-Regular.woff2',
-  variable: '--font-geist-mono',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'phoTextAI - Magic Image Editor',
-  description: 'The AI-powered image text editor with vision and inpainting.',
+  description: 'The AI-powered image text editor.',
 };
 
 export default function RootLayout({
@@ -30,7 +17,7 @@ export default function RootLayout({
       <head>
         <script src="https://cdn.jsdelivr.net/npm/puter/dist/browser.min.js"></script>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
         {children}
         <Toaster />
       </body>
