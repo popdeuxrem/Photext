@@ -7,9 +7,15 @@ import { Toolbar } from './Toolbar';
 import { Header } from './Header';
 import { JobStatusPanel } from './JobStatusPanel';
 
+type ProjectData = {
+  id: string;
+  name: string;
+  canvas_data: object;
+};
+
 type EditorClientProps = {
   projectId: string;
-  initialProjectData: any; // Replace with a proper type
+  initialProjectData: ProjectData | null;
 };
 
 export function EditorClient({ projectId, initialProjectData }: EditorClientProps) {
