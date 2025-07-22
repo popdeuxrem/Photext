@@ -58,9 +58,11 @@ export function AiToolsModal({ isOpen, setIsOpen }: AiToolsModalProps) {
         <div className="grid md:grid-cols-2 gap-6 pt-4">
           <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
             <h3 className="font-semibold">AI Rewriter</h3>
-            {/* FIXED: Replaced double quotes with single quotes to fix linting error */}
+            {/* FIXED: The string is now wrapped in curly braces to satisfy the linter */}
             <p className='text-sm truncate'>
-              Original: '{activeObject && 'text' in activeObject ? (activeObject as fabric.Textbox).text : 'None'}'
+              {'Original: "'}
+              {activeObject && 'text' in activeObject ? (activeObject as fabric.Textbox).text : 'None'}
+              {'"'}
             </p>
             <div className="flex gap-2">
               <Select onValueChange={setRewriteTone} defaultValue="professional">

@@ -20,10 +20,10 @@ export function Toolbar() {
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file || !fabricCanvas) return;
-        
+
         const jobId = Date.now();
         addJob({ id: jobId, text: 'Compressing image...', status: 'processing' });
-        
+
         try {
             const compressedFile = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920 });
             updateJob(jobId, 'processing', 'Uploading image...');
@@ -57,7 +57,7 @@ export function Toolbar() {
     const handleMagicEdit = () => {
         toast({ title: "Magic Edit: To be implemented" });
     };
-    
+
     return (
         <>
             <aside className="w-72 bg-white p-4 space-y-6 overflow-y-auto flex flex-col border-r">
@@ -82,7 +82,7 @@ export function Toolbar() {
                 </div>
 
                 <TextProperties />
-                
+
                 <div className="border-t pt-4">
                     <Button onClick={() => setIsAiModalOpen(true)} className="w-full">
                         <Bot className="mr-2 h-4 w-4" /> AI Assistant
