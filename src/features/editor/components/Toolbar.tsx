@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/shared/components/ui/button'; // <-- FIXED
+import { Label } from '@/shared/components/ui/label';   // <-- FIXED
 import { useAppStore } from '@/shared/store/useAppStore';
 import { fabric } from 'fabric';
 import { AiToolsModal } from './AiToolsModal';
 import { Upload, Type, Wand2, Bot } from 'lucide-react';
 import { useToast } from '@/shared/components/ui/use-toast';
 import imageCompression from 'browser-image-compression';
-import { TextProperties } from './TextProperties'; // Correctly imported
+import { TextProperties } from './TextProperties';
 
 export function Toolbar() {
     const { fabricCanvas, activeObject, saveState, addJob, updateJob, removeJob } = useAppStore();
@@ -92,5 +93,3 @@ export function Toolbar() {
         </>
     );
 }
-
-// The duplicate function that was here has been removed.

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppStore } from '@/shared/store/useAppStore';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { rewriteText, generateCaption } from '@/shared/lib/api';
+import { fabric } from 'fabric';
 
 type AiToolsModalProps = { isOpen: boolean; setIsOpen: (open: boolean) => void; };
 
@@ -20,21 +21,19 @@ export function AiToolsModal({ isOpen, setIsOpen }: AiToolsModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleRewrite = async () => {
-    if (!activeObject || !('text' in activeObject)) return toast({ title: 'No text selected.', variant: 'destructive' });
+    const textObject = activeObject as fabric.Textbox;
+    if (!textObject || !textObject.text) return toast({ title: 'No text selected.', variant: 'destructive' });
     setIsProcessing(true);
     setRewrittenText('');
     try {
-      setRewrittenText(await rewriteText(activeObject.text, rewriteTone));
-    } catch (error) {
-      toast({ title: 'Rewrite Failed', variant: 'destructive' });
-    } finally {
-      setIsProcessing(false);
-    }
+      setRewrittenText(await rewriteText(textObject.text, rewriteTone));
+    } catch (error) { toast({ title: 'Rewrite Failed', variant: 'destructive' }) }
+    finally { setIsProcessing(false) }
   };
 
   const applyRewrite = () => {
     if (activeObject && rewrittenText) {
-      activeObject.set('text', rewrittenText);
+      (activeObject as fabric.Textbox).set('text', rewrittenText);
       fabricCanvas?.renderAll();
       toast({ title: 'Text applied!' });
       setIsOpen(false);
@@ -42,17 +41,14 @@ export function AiToolsModal({ isOpen, setIsOpen }: AiToolsModalProps) {
   };
 
   const handleCaption = async () => {
-    const bgImage = fabricCanvas?.backgroundImage;
+    const bgImage = fabricCanvas?.backgroundImage as fabric.Image;
     if (!bgImage?.getSrc()) return toast({ title: 'No image on canvas.', variant: 'destructive' });
     setIsProcessing(true);
     setCaption('');
     try {
       setCaption(await generateCaption(bgImage.getSrc()));
-    } catch (error) {
-      toast({ title: 'Caption Failed', variant: 'destructive' });
-    } finally {
-      setIsProcessing(false);
-    }
+    } catch (error) { toast({ title: 'Caption Failed', variant: 'destructive' }) }
+    finally { setIsProcessing(false) }
   };
 
   return (
@@ -60,8 +56,31 @@ export function AiToolsModal({ isOpen, setIsOpen }: AiToolsModalProps) {
       <DialogContent className="max-w-3xl">
         <DialogHeader><DialogTitle>AI Assistant</DialogTitle><DialogDescription>Enhance your content with AI.</DialogDescription></DialogHeader>
         <div className="grid md:grid-cols-2 gap-6 pt-4">
-          <div className="space-y-4 p-4 bg-slate-50 rounded-lg border"><h3 className="font-semibold">AI Rewriter</h3><p className="text-sm truncate">Original: "{activeObject && 'text' in activeObject ? activeObject.text : 'None'}"</p><div className="flex gap-2"><Select onValueChange={setRewriteTone} defaultValue="professional"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="professional">Professional</SelectItem><SelectItem value="casual">Casual</SelectItem></SelectContent></Select><Button onClick={handleRewrite} disabled={!activeObject || isProcessing}>Rewrite</Button></div><Textarea value={rewrittenText} placeholder="Rewritten text..." /><Button onClick={applyRewrite} disabled={!rewrittenText}>Apply Text</Button></div>
-          <div className="space-y-4 p-4 bg-slate-50 rounded-lg border"><h3 className="font-semibold">AI Captioner</h3><Button onClick={handleCaption} disabled={isProcessing} className="w-full">Generate Caption</Button><Textarea value={caption} placeholder="Generated caption..." /><Button onClick={() => navigator.clipboard.writeText(caption)} disabled={!caption} variant="outline">Copy</Button></div>
+          <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
+            <h3 className="font-semibold">AI Rewriter</h3>
+            {/* FIXED: Replaced double quotes with single quotes to fix linting error */}
+            <p className='text-sm truncate'>
+              Original: '{activeObject && 'text' in activeObject ? (activeObject as fabric.Textbox).text : 'None'}'
+            </p>
+            <div className="flex gap-2">
+              <Select onValueChange={setRewriteTone} defaultValue="professional">
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="professional">Professional</SelectItem>
+                  <SelectItem value="casual">Casual</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={handleRewrite} disabled={!activeObject || isProcessing}>Rewrite</Button>
+            </div>
+            <Textarea value={rewrittenText} placeholder="Rewritten text..." />
+            <Button onClick={applyRewrite} disabled={!rewrittenText}>Apply Text</Button>
+          </div>
+          <div className="space-y-4 p-4 bg-slate-50 rounded-lg border">
+            <h3 className="font-semibold">AI Captioner</h3>
+            <Button onClick={handleCaption} disabled={isProcessing} className="w-full">Generate Caption</Button>
+            <Textarea value={caption} placeholder="Generated caption..." />
+            <Button onClick={() => navigator.clipboard.writeText(caption)} disabled={!caption} variant="outline">Copy</Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
